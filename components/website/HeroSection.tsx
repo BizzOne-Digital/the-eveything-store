@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Truck, ShieldCheck, Tags, Sparkles } from "lucide-react";
-import { resolveImage } from "@/lib/utils";
 import type { PlainSiteSettings } from "@/lib/website/data";
 
 const TRUST_POINTS = [
@@ -18,13 +17,23 @@ export default function HeroSection({ settings }: { settings: PlainSiteSettings 
   const headingLines = settings.heroHeading.split("\n");
 
   return (
-    <section className="relative overflow-hidden bg-tes-black">
+    <section className="relative overflow-hidden bg-tes-black min-h-[560px] flex items-center">
+      <Image
+        src="/hero.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-tes-black via-tes-black/85 to-tes-black/40" />
       <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-tes-gold/20 blur-[120px]" />
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="relative mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 py-20 lg:py-32">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-2xl"
         >
           <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.3em] text-tes-gold-light">
             {settings.heroSubheading}
@@ -76,28 +85,6 @@ export default function HeroSection({ settings }: { settings: PlainSiteSettings 
                 <span className="text-xs sm:text-sm font-medium text-white/85">{label}</span>
               </div>
             ))}
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
-          className="relative"
-        >
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-[0_0_80px_-20px_rgba(201,154,46,0.5)]">
-            <Image
-              src={resolveImage(
-                settings.heroImage,
-                "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80"
-              )}
-              alt="A curated collage of products and local services"
-              fill
-              priority
-              sizes="(min-width: 1024px) 45vw, 90vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 ring-1 ring-inset ring-tes-gold/30 rounded-3xl" />
           </div>
         </motion.div>
       </div>
