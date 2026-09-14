@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "seed": "tsx scripts/seed.ts"
+    "dev": "node node_modules/next/dist/bin/next dev",
+    "build": "node node_modules/next/dist/bin/next build",
+    "start": "node node_modules/next/dist/bin/next start",
+    "lint": "node node_modules/eslint/bin/eslint.js .",
+    "seed": "node node_modules/tsx/dist/cli.mjs scripts/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
