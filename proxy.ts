@@ -3,7 +3,7 @@ import { SESSION_COOKIE } from "@/lib/auth";
 
 // Lightweight edge check (cookie presence only). Full JWT verification happens
 // in the admin layout server component, since jsonwebtoken requires Node runtime.
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {

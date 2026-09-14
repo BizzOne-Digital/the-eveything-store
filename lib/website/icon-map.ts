@@ -1,0 +1,55 @@
+import {
+  Wrench,
+  Car,
+  Truck,
+  Settings,
+  Hammer,
+  Scissors,
+  Paintbrush,
+  Home,
+  Zap,
+  Droplet,
+  Leaf,
+  Package,
+  ShieldCheck,
+  Sparkles,
+  Camera,
+  Laptop,
+  Users,
+  Clock,
+  Star,
+  ShoppingBag,
+  HeartHandshake,
+  MapPin,
+  type LucideIcon,
+} from "lucide-react";
+
+export const iconMap: Record<string, LucideIcon> = {
+  wrench: Wrench,
+  car: Car,
+  truck: Truck,
+  settings: Settings,
+  hammer: Hammer,
+  scissors: Scissors,
+  paintbrush: Paintbrush,
+  home: Home,
+  zap: Zap,
+  droplet: Droplet,
+  leaf: Leaf,
+  package: Package,
+  shield: ShieldCheck,
+  sparkles: Sparkles,
+  camera: Camera,
+  laptop: Laptop,
+  users: Users,
+  clock: Clock,
+  star: Star,
+  bag: ShoppingBag,
+  heart: HeartHandshake,
+  pin: MapPin,
+};
+
+export function getIcon(name?: string): LucideIcon {
+  if (!name) return Sparkles;
+  return iconMap[name.toLowerCase()] ?? Sparkles;
+}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Manrope } from "next/font/google";
 import { Toaster } from "sonner";
+import { CartProvider } from "@/lib/cart-context";
+import { WishlistProvider } from "@/lib/wishlist-context";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -32,7 +34,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${playfair.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <CartProvider>
+          <WishlistProvider>{children}</WishlistProvider>
+        </CartProvider>
         <Toaster position="top-center" richColors />
       </body>
     </html>

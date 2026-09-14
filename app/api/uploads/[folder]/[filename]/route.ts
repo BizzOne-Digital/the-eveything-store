@@ -27,7 +27,7 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 });
   }
 
-  return new NextResponse(upload.data as unknown as Buffer, {
+  return new NextResponse(new Uint8Array(upload.data as unknown as Buffer), {
     headers: {
       "Content-Type": upload.mimeType,
       "Content-Length": String(upload.size),
