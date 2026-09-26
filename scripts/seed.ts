@@ -65,6 +65,14 @@ const CATEGORIES = [
     sortOrder: 8,
     featured: false,
   },
+  {
+    name: "Used Cars",
+    slug: "used-cars",
+    description: "Quality pre-owned vehicles.",
+    image: "",
+    sortOrder: 9,
+    featured: false,
+  },
 ];
 
 const SERVICES = [

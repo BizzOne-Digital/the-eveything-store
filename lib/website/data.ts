@@ -27,7 +27,7 @@ const DEFAULT_SETTINGS: PlainSiteSettings = {
   footerLogo: "",
   favicon: "",
   phone: "647-470-1901",
-  email: "T.E.S.S@Gmail.com",
+  email: "tessshoporiginal@gmail.com",
   website: "www.TheEverythingShopandServices.ca",
   address: "",
   socialLinks: {},

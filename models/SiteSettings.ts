@@ -43,7 +43,7 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
     footerLogo: { type: String },
     favicon: { type: String },
     phone: { type: String, default: "647-470-1901" },
-    email: { type: String, default: "T.E.S.S@Gmail.com" },
+    email: { type: String, default: "tessshoporiginal@gmail.com" },
     website: { type: String, default: "www.TheEverythingShopandServices.ca" },
     address: { type: String },
     socialLinks: {
