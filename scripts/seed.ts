@@ -66,10 +66,10 @@ const CATEGORIES = [
     featured: false,
   },
   {
-    name: "Used Cars",
+    name: "Cars for Sale & Rental",
     slug: "used-cars",
-    description: "Quality pre-owned vehicles.",
-    image: "",
+    description: "Quality vehicles for sale and rental.",
+    image: "https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800",
     sortOrder: 9,
     featured: false,
   },

@@ -2,6 +2,12 @@ import Header from "@/components/website/Header";
 import Footer from "@/components/website/Footer";
 import { getSiteSettings } from "@/lib/website/data";
 
+// Public pages read admin-managed content (categories, services, settings,
+// promotions) from MongoDB. Without this, Next.js statically bakes that data
+// in at build time and admin edits never show up on production without a
+// redeploy. ISR revalidates every 60s so admin changes appear promptly.
+export const revalidate = 60;
+
 export default async function WebsiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings();
 
