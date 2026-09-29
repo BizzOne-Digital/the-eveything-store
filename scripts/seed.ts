@@ -117,8 +117,8 @@ const SERVICES = [
 async function seed() {
   await connectDB();
 
-  const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@bizzone.digital";
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD || "ChangeMe123!";
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || "tessshoporiginal@gmail.com";
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || "Admin@123";
 
   const existingAdmin = await Admin.findOne({ email: adminEmail });
   if (!existingAdmin) {
