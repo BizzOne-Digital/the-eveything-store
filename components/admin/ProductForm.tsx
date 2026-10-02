@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Loader2, Plus, Trash2, X, Star } from "lucide-react";
 import LocalImageField from "./LocalImageField";
+import { parseJsonResponse } from "@/lib/fetch-json";
 
 const productFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -147,8 +148,7 @@ export default function ProductForm({ mode, productId, initialValues }: ProductF
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to save product");
+      await parseJsonResponse(res);
       toast.success(mode === "edit" ? "Product updated" : "Product created");
       router.push("/admin/products");
       router.refresh();
