@@ -66,11 +66,19 @@ const CATEGORIES = [
     featured: false,
   },
   {
-    name: "Cars for Sale & Rental",
+    name: "New & Used Cars for Sale",
     slug: "used-cars",
-    description: "Quality vehicles for sale and rental.",
+    description: "New and used vehicles for sale.",
     image: "https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800",
     sortOrder: 9,
+    featured: false,
+  },
+  {
+    name: "Pets",
+    slug: "pets",
+    description: "Pet supplies, food, and accessories.",
+    image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800",
+    sortOrder: 10,
     featured: false,
   },
 ];
