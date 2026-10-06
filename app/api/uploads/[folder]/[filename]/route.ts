@@ -27,14 +27,14 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 });
   }
 
-  // Content-Length is intentionally omitted — if the stored `size` field ever
-  // drifted from the actual byte length of `data` (e.g. a historical upload
-  // edge case), a client would wait forever for bytes that never arrive,
-  // since the body is already fully buffered here, let the runtime compute
-  // the correct length itself instead of trusting a stored value.
-  const bytes = Buffer.from(upload.data as unknown as Buffer);
+  // Under .lean(), a Buffer-typed field comes back as a raw BSON Binary
+  // wrapper object ({ buffer, sub_type, position }), not a plain Buffer —
+  // Buffer.from() on that wrapper silently yields 0 bytes since it isn't
+  // array-like. The actual bytes live on its `.buffer` property.
+  const raw = upload.data as unknown as { buffer: Buffer } | Buffer;
+  const bytes = Buffer.isBuffer(raw) ? raw : raw.buffer;
 
-  return new NextResponse(bytes, {
+  return new NextResponse(new Uint8Array(bytes), {
     headers: {
       "Content-Type": upload.mimeType,
       "Cache-Control": "public, max-age=31536000, immutable",
