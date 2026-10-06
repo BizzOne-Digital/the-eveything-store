@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,6 +12,7 @@ import { Loader2, Truck, ShieldCheck } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { resolveImage, formatPrice } from "@/lib/utils";
 import Breadcrumbs from "@/components/website/Breadcrumbs";
+import PayPalButton from "@/components/website/PayPalButton";
 
 const schema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
@@ -30,15 +31,40 @@ type FormValues = z.infer<typeof schema>;
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, clearCart } = useCart();
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "paypal">("cod");
   const {
     register,
     handleSubmit,
+    trigger,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
     if (items.length === 0) router.replace("/cart");
   }, [items.length, router]);
+
+  const validateAndGetCustomer = useCallback(async () => {
+    const valid = await trigger();
+    if (!valid) return null;
+    return getValues();
+  }, [trigger, getValues]);
+
+  const handlePayPalSuccess = useCallback(
+    (orderNumber: string) => {
+      clearCart();
+      router.push(`/order-confirmation/${orderNumber}`);
+    },
+    [clearCart, router]
+  );
+
+  const paypalItems = items.map((item) => ({
+    productId: item.productId,
+    name: item.name,
+    image: item.image,
+    price: item.price,
+    quantity: item.quantity,
+  }));
 
   async function onSubmit(values: FormValues) {
     try {
@@ -133,24 +159,60 @@ export default function CheckoutPage() {
             <textarea id="deliveryNotes" rows={3} {...register("deliveryNotes")} className="w-full rounded-lg border border-tes-border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-tes-gold/60" />
           </div>
 
-          <div className="rounded-xl bg-tes-cream p-4 flex items-start gap-3">
-            <Truck className="h-5 w-5 text-tes-gold-dark mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-tes-black">Payment Method: Pay on Delivery / Pickup</p>
-              <p className="text-xs text-tes-muted mt-0.5">
-                No payment is collected online. You&apos;ll pay when your order is delivered or picked up.
-              </p>
+          <div>
+            <p className="block text-sm font-semibold text-tes-black mb-2">Payment Method</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("cod")}
+                className={`rounded-xl border p-4 text-left transition-colors ${
+                  paymentMethod === "cod" ? "border-tes-gold bg-tes-cream" : "border-tes-border"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <Truck className="h-5 w-5 text-tes-gold-dark mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-tes-black">Pay on Delivery / Pickup</p>
+                    <p className="text-xs text-tes-muted mt-0.5">Pay when your order is delivered or picked up.</p>
+                  </div>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("paypal")}
+                className={`rounded-xl border p-4 text-left transition-colors ${
+                  paymentMethod === "paypal" ? "border-tes-gold bg-tes-cream" : "border-tes-border"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="h-5 w-5 text-tes-gold-dark mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-tes-black">Pay with PayPal</p>
+                    <p className="text-xs text-tes-muted mt-0.5">Pay securely online right now.</p>
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="mt-2 flex items-center justify-center gap-2 rounded-full bg-tes-black py-3.5 text-sm font-bold text-white hover:bg-tes-gold hover:text-tes-black transition-colors disabled:opacity-60"
-          >
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-            Place Order
-          </button>
+          {paymentMethod === "cod" ? (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-2 flex items-center justify-center gap-2 rounded-full bg-tes-black py-3.5 text-sm font-bold text-white hover:bg-tes-gold hover:text-tes-black transition-colors disabled:opacity-60"
+            >
+              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              Place Order
+            </button>
+          ) : (
+            <div className="mt-2">
+              <PayPalButton
+                items={paypalItems}
+                validateAndGetCustomer={validateAndGetCustomer}
+                onSuccess={handlePayPalSuccess}
+              />
+            </div>
+          )}
         </form>
 
         <div className="rounded-2xl border border-tes-border p-6 h-fit">

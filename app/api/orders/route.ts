@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { connectDB } from "@/lib/mongodb";
-import { Order } from "@/models/Order";
-import { Customer } from "@/models/Customer";
-import { generateOrderNumber } from "@/lib/utils";
+import { persistOrder } from "@/lib/create-order";
 
 const itemSchema = z.object({
   productId: z.string().optional(),
@@ -27,14 +24,6 @@ const orderSchema = z.object({
   paymentMethod: z.string().optional().default("Pay on Delivery / Pickup"),
 });
 
-/**
- * Placeholder for a future real payment processor (e.g. Stripe/Square).
- * Intentionally a no-op today — checkout is "Pay on Delivery / Pickup" only.
- */
-async function processPayment(): Promise<{ status: "pending" }> {
-  return { status: "pending" };
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -47,71 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
-    const subtotal = data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const total = subtotal;
-
-    await connectDB();
-
-    const payment = await processPayment();
-
-    let orderNumber = generateOrderNumber();
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const exists = await Order.findOne({ orderNumber }).lean();
-      if (!exists) break;
-      orderNumber = generateOrderNumber();
-    }
-
-    const order = await Order.create({
-      orderNumber,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      city: data.city,
-      province: data.province,
-      postalCode: data.postalCode,
-      deliveryNotes: data.deliveryNotes || undefined,
-      items: data.items.map((item) => ({
-        product: item.productId || undefined,
-        name: item.name,
-        image: item.image,
-        price: item.price,
-        quantity: item.quantity,
-      })),
-      subtotal,
-      total,
-      paymentMethod: data.paymentMethod,
-      paymentStatus: payment.status,
-      status: "New",
-    });
-
-    const existingCustomer = await Customer.findOne({ email: data.email });
-    if (existingCustomer) {
-      existingCustomer.ordersCount += 1;
-      existingCustomer.totalSpent += total;
-      existingCustomer.firstName = data.firstName;
-      existingCustomer.lastName = data.lastName;
-      existingCustomer.phone = data.phone;
-      existingCustomer.address = data.address;
-      existingCustomer.city = data.city;
-      existingCustomer.province = data.province;
-      existingCustomer.postalCode = data.postalCode;
-      await existingCustomer.save();
-    } else {
-      await Customer.create({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        city: data.city,
-        province: data.province,
-        postalCode: data.postalCode,
-        ordersCount: 1,
-        totalSpent: total,
-      });
-    }
+    const order = await persistOrder(data, data.items, data.paymentMethod, "pending");
 
     return NextResponse.json({ success: true, orderNumber: order.orderNumber });
   } catch {
