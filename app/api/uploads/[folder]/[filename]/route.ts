@@ -27,10 +27,16 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 });
   }
 
-  return new NextResponse(new Uint8Array(upload.data as unknown as Buffer), {
+  // Content-Length is intentionally omitted — if the stored `size` field ever
+  // drifted from the actual byte length of `data` (e.g. a historical upload
+  // edge case), a client would wait forever for bytes that never arrive,
+  // since the body is already fully buffered here, let the runtime compute
+  // the correct length itself instead of trusting a stored value.
+  const bytes = Buffer.from(upload.data as unknown as Buffer);
+
+  return new NextResponse(bytes, {
     headers: {
       "Content-Type": upload.mimeType,
-      "Content-Length": String(upload.size),
       "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
